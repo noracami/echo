@@ -104,6 +104,6 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   if deployment_host = ENV["DEPLOYMENT_HOST"].presence
-    config.host << deployment_host
+    config.hosts << deployment_host
   end
 end
