@@ -18,7 +18,26 @@ class EchoController < ApplicationController
       summary: echo_params[:incident][:summary]
     )
 
+    # use Faraday to post to Discord
+    webhook_url = Rails.application.credentials.discord.webhook_url
+
+    connection = Faraday.new webhook_url
+    connection.post do |req|
+      req.headers["Content-Type"] = "application/json"
+      req.body = {
+        content: "New incident report: #{echo_params[:incident][:summary]}\n#{ENV["APP_URL"]}/r/#{echo_params[:incident][:incident_id]}",
+        username: "Google Cloud Platform",
+        avatar_url: "https://www.gstatic.com/images/branding/product/1x/cloud_64dp.png"
+      }.to_json
+    end
+
     head :ok
+  end
+
+  def show
+    report = GoogleIncidentReport.find_by(incident_id: params[:incident_id])
+
+    render json: report
   end
 
   private

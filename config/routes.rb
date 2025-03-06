@@ -1,8 +1,11 @@
 Rails.application.routes.draw do
   scope "admin" do
     get "reports", to: "echo#index"
-    get "r", to: redirect("/admin/reports")
+    get "reports/:incident_id", to: "echo#show"
   end
+
+  get "r", to: redirect("/admin/reports")
+  get "r/:incident_id", to: redirect("/admin/reports/%{incident_id}")
 
   post "google-incident-reports", to: "echo#create"
 
