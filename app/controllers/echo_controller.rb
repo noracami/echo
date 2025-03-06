@@ -12,11 +12,25 @@ class EchoController < ApplicationController
   end
 
   def create
-    GoogleIncidentReport.create(
-      raw: echo_params,
-      incident_id: echo_params[:incident][:incident_id],
-      summary: echo_params[:incident][:summary]
-    )
+    gir = if echo_params[:incident].present?
+      GoogleIncidentReport.create(
+        raw: echo_params,
+        incident_id: echo_params.dig(:incident, :incident_id),
+        summary: echo_params.dig(:incident, :summary),
+      )
+    elsif echo_params[:subject].present?
+      GoogleIncidentReport.create(
+        raw: echo_params,
+        incident_id: Time.now.to_i,
+        summary: echo_params[:subject],
+      )
+    else
+      GoogleIncidentReport.create(
+        raw: echo_params,
+        incident_id: Time.now.to_i,
+        summary: "No summary provided",
+      )
+    end
 
     # use Faraday to post to Discord
     webhook_url = Rails.application.credentials.discord.webhook_url
@@ -25,7 +39,7 @@ class EchoController < ApplicationController
     connection.post do |req|
       req.headers["Content-Type"] = "application/json"
       req.body = {
-        content: "New incident report: #{echo_params[:incident][:summary]}\n#{ENV["APP_URL"]}/r/#{echo_params[:incident][:incident_id]}",
+        content: "New incident report: #{gir.summary}\n#{ENV["APP_URL"]}/r/#{gir.incident_id}",
         username: "Google Cloud Platform",
         avatar_url: "https://www.gstatic.com/images/branding/product/1x/cloud_64dp.png"
       }.to_json
@@ -43,6 +57,6 @@ class EchoController < ApplicationController
   private
 
   def echo_params
-    params.require(:echo).permit(:version, incident: {})
+    params.require(:echo).permit!
   end
 end
