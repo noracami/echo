@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
-  match "echo", to: "echo#index", via: [ :get, :post ]
+  scope "admin" do
+    get "reports", to: "echo#index"
+    get "r", to: redirect("/admin/reports")
+  end
+
+  post "google-incident-reports", to: "echo#create"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -12,7 +17,5 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   # Defines the root path route ("/")
-  # root "posts#index"
-
-  root "rails/welcome#index"
+  root "echo#ok"
 end
