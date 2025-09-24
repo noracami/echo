@@ -10,9 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_06_100753) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_24_062129) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "custom_reports", force: :cascade do |t|
+    t.string "sub"
+    t.json "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sub"], name: "index_custom_reports_on_sub"
+  end
 
   create_table "google_incident_reports", force: :cascade do |t|
     t.json "raw"

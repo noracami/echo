@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :custom_reports
+  post "cr", to: "custom_reports#create"
+
   scope "admin" do
     get "reports", to: "echo#index"
     get "reports/:incident_id", to: "echo#show"
