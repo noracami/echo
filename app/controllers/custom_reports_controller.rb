@@ -2,7 +2,7 @@ class CustomReportsController < ApplicationController
   skip_forgery_protection only: [ :create ]
 
   def index
-    render json: CustomReport.take(10)
+    render json: CustomReport.last(10)
   end
 
   def create
